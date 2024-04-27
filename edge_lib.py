@@ -79,6 +79,17 @@ def get_user(name: str):
     """, name=name)[0]
     return dataclasses.asdict(output)
 
+def get_users():
+    outputs =  client.query("""
+        SELECT Context {
+            name,
+            emoji,
+            context
+        }
+        FILTER .name = <str>$name
+    """)
+    return [dataclasses.asdict(output) for output in outputs]
+
 def get_couple(person1: str, person2: str):
     idx = person1 < person2
     person1, person2 = (person1, person2) if idx else (person2, person1)
