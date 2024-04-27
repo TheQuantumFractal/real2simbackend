@@ -1,6 +1,7 @@
 module default {
   type Context {
     required name: str;
+    emoji: str;
     context: str;
     index on (.name); 
   }
