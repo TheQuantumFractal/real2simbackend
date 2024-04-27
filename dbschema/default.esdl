@@ -14,6 +14,7 @@ module default {
     perspective2: str;
     score1: int32;
     score2: int32;
+    meet_cute: str;
     index on (.couple); 
   }
 }
