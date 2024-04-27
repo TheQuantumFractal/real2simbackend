@@ -1,8 +1,12 @@
-from flask import Flask
+from flask import Flask, jsonify
 import edge_lib
 
 app = Flask(__name__)
 
 @app.route('/users', methods=['GET'])
-def hello():
-    return edge_lib.get_users()
+def index():
+    users = edge_lib.get_users()
+    return jsonify({
+        'success': True,
+        'users': users
+    })
