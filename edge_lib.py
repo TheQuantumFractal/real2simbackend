@@ -1,14 +1,16 @@
 import edgedb
+import dataclasses
 
 client = edgedb.create_client()
 
-def insert_user(name: str, context: str = ""):
+def insert_user(name: str, context: str = "", emoji=""):
     client.query("""
         INSERT Context {
             name := <str>$name,
+            emoji := <str>$emoji,
             context := <str>$context
         }
-    """, name=name, context=context)
+    """, name=name, context=context, emoji=emoji)
 
 def insert_couple(person1: str, person2: str, conversation1: str = "", conversation2: str = "", perspective1: str = "", perspective2: str = "", score1: int = -1, score2: int = -1):
     idx = person1 < person2
@@ -67,18 +69,37 @@ def update_couple(person1: str, person2: str, conversation1: str = "", conversat
     """, person1=person1, person2=person2, conversation1=conversation1, conversation2=conversation2, perspective1=perspective1, perspective2=perspective2, score1=score1, score2=score2)
 
 def get_user(name: str):
-    return client.query("""
-        SELECT Context
+    output =  client.query("""
+        SELECT Context {
+            name,
+            emoji,
+            context
+        }
         FILTER .name = <str>$name
-    """, name=name)
+    """, name=name)[0]
+    return dataclasses.asdict(output)
 
 def get_couple(person1: str, person2: str):
     idx = person1 < person2
     person1, person2 = (person1, person2) if idx else (person2, person1)
-    return client.query("""
-        SELECT Couple
+    output =  client.query("""
+        SELECT Couple {
+            couple,
+            conversation1,
+            conversation2,
+            perspective1,
+            perspective2,
+            score1,
+            score2
+        }
         FILTER .couple = (<str>$person1, <str>$person2)
-    """, person1=person1, person2=person2)
+    """, person1=person1, person2=person2)[0]
+    richard_cheney = dataclasses.asdict(output)
+    richard_cheney["couple"] = richard_cheney["couple"] if idx else (richard_cheney["couple"][1], richard_cheney["couple"][0])
+    richard_cheney["conversation1"], richard_cheney["conversation2"] = (richard_cheney["conversation1"], richard_cheney["conversation2"]) if idx else (richard_cheney["conversation2"], richard_cheney["conversation1"])
+    richard_cheney["perspective1"], richard_cheney["perspective2"] = (richard_cheney["perspective1"], richard_cheney["perspective2"]) if idx else (richard_cheney["perspective2"], richard_cheney["perspective1"])
+    richard_cheney["score1"], richard_cheney["score2"] = (richard_cheney["score1"], richard_cheney["score2"]) if idx else (richard_cheney["score2"], richard_cheney["score1"])
+    return richard_cheney
 
 if __name__ == "__main__":
     insert_user("Alice", "Alice's context")
