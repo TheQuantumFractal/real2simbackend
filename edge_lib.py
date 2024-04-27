@@ -96,7 +96,6 @@ def get_users():
             emoji,
             context
         }
-        FILTER .name = <str>$name
     """)
     return [dataclasses.asdict(output) for output in outputs]
 
