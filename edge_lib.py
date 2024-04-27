@@ -86,8 +86,10 @@ def get_user(name: str):
             context
         }
         FILTER .name = <str>$name
-    """, name=name)[0]
-    return dataclasses.asdict(output)
+    """, name=name)
+    print(name)
+    print(output)
+    return dataclasses.asdict(output[0])
 
 def get_users():
     outputs =  client.query("""
@@ -121,6 +123,21 @@ def get_couple(person1: str, person2: str):
     richard_cheney["perspective1"], richard_cheney["perspective2"] = (richard_cheney["perspective1"], richard_cheney["perspective2"]) if idx else (richard_cheney["perspective2"], richard_cheney["perspective1"])
     richard_cheney["score1"], richard_cheney["score2"] = (richard_cheney["score1"], richard_cheney["score2"]) if idx else (richard_cheney["score2"], richard_cheney["score1"])
     return richard_cheney
+
+def get_couples():
+    outputs =  client.query("""
+        SELECT Couple {
+            couple,
+            conversation1,
+            conversation2,
+            perspective1,
+            perspective2,
+            score1,
+            score2,
+            meet_cute
+        }
+    """)
+    return [dataclasses.asdict(output) for output in outputs]
 
 if __name__ == "__main__":
     insert_user("Alice", "Alice's context")
