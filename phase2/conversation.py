@@ -62,8 +62,9 @@ class AgentConversation:
             
             # Log the conversation
             self.conversation.append(f"{self.character1_name}: {last_message1}")
-            print(f"Agent 1: {last_message1}")
-            print(f"Agent 2: {last_message2}")
+            self.conversation.append(f"{self.character2_name}: {last_message2}")
+            print(f"{self.character1_name}: {last_message1}")
+            print(f"{self.character2_name}: {last_message2}")
 
         # Ask both agents to reflect on the date
         response1_perspective, response1_score, response2_perspective, response2_score = self.interview_phase()
@@ -73,10 +74,7 @@ class AgentConversation:
         print("Meet cute: " + meet_cute)
 
         # Store results in DB
-        conversation1_as_string = ''.join(map(str, self.conversation1))
-        conversation2_as_string = ''.join(map(str, self.conversation2))
-
-        edge_lib.insert_couple(self.character1_name, self.character2_name, "", "", response1_perspective, response2_perspective, response1_score, response2_score, meet_cute)
+        edge_lib.insert_couple(self.character1_name, self.character2_name, self.conversation, self.conversation, response1_perspective, response2_perspective, response1_score, response2_score, meet_cute)
         print("Stored couple in DB!")
 
     def get_conversation_history(self, agent_number):
