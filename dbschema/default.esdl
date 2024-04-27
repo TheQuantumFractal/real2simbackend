@@ -1,8 +1,8 @@
 module default {
   type Context {
     required name: str;
-    emoji: str;
     context: str;
+    emoji: str;
     index on (.name); 
   }
 
@@ -15,6 +15,10 @@ module default {
     score1: int32;
     score2: int32;
     meet_cute: str;
-    index on (.couple); 
+    index on (.couple);
+  }
+
+  type Compatible {
+    required couple: tuple<person1: str, person2: str>;
   }
 }

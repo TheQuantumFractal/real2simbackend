@@ -42,7 +42,24 @@ def insert_couple(person1: str, person2: str, conversation1: str = "", conversat
             meet_cute:= <str>$meet_cute
         }
     """, person1=person1, person2=person2, conversation1=conversation1, conversation2=conversation2, perspective1=perspective1, perspective2=perspective2, score1=score1, score2=score2, meet_cute=meet_cute)
-    print(out)
+
+def insert_compatible(person1: str, person2: str):
+    idx = person1 < person2
+    person1, person2 = (person1, person2) if idx else (person2, person1)
+    client.query("""
+        INSERT Compatible {
+            couple:= (<str>$person1, <str>$person2)
+        }
+    """, person1=person1, person2=person2)
+
+def get_compatible():
+    outputs = client.query("""
+        SELECT Compatible {
+            couple
+        }
+    """)
+    return [dataclasses.asdict(output) for output in outputs]
+
 
 def update_user(name: str, context: str = ""):
     client.query("""
@@ -93,17 +110,18 @@ def update_couple(person1: str, person2: str, conversation1: str = "", conversat
     """, person1=person1, person2=person2, conversation1=conversation1, conversation2=conversation2, perspective1=perspective1, perspective2=perspective2, score1=score1, score2=score2, meet_cute=meet_cute)
 
 def get_user(name: str):
-    output =  client.query("""
-        SELECT Context {
-            name,
-            emoji,
-            context
-        }
-        FILTER .name = <str>$name
-    """, name=name)
-    print(name)
-    print(output)
-    return dataclasses.asdict(output[0])
+    try:
+        output =  client.query("""
+            SELECT Context {
+                name,
+                emoji,
+                context
+            }
+            FILTER .name = <str>$name
+        """, name=name)
+        return dataclasses.asdict(output[0])
+    except:
+        return None
 
 def get_users():
     outputs =  client.query("""

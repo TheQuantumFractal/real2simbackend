@@ -74,7 +74,7 @@ class AgentConversation:
         print("Meet cute: " + meet_cute)
 
         # Store results in DB
-        edge_lib.insert_couple(self.character1_name, self.character2_name, self.conversation, self.conversation, response1_perspective, response2_perspective, response1_score, response2_score, meet_cute)
+        edge_lib.insert_couple(self.character1_name, self.character2_name, " \n".join(self.conversation), "", response1_perspective, response2_perspective, response1_score, response2_score, meet_cute)
         print("Stored couple in DB!")
 
     def get_conversation_history(self, agent_number):
