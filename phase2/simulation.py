@@ -2,6 +2,7 @@
 from conversation import AgentConversation
 import edge_lib
 import json
+from joblib import Parallel, delayed
 
 class Simulation():
     def __init__(self, candidate_file, emojis_file):
@@ -11,16 +12,17 @@ class Simulation():
     def load_json(self, file_path):
         with open(file_path, 'r') as file:
             return json.load(file)
-
+    
     def run(self):
         print("Simulation is running...")
-        for i in range(len(self.candidates)):
+        def helper(i):
             candidate1 = list(self.candidates.keys())[i]
             if not edge_lib.get_user(candidate1):
                 edge_lib.insert_user(candidate1, self.candidates[candidate1], self.emojis[candidate1])
             for j in range(i+1, len(self.candidates)):
                 candidate2 = list(self.candidates.keys())[j]
                 self.simulate_conversation(candidate1, self.candidates[candidate1], candidate2, self.candidates[candidate2])
+        Parallel(n_jobs=4)(delayed(helper)(i) for i in range(len(self.candidates)))    
     
     def simulate_conversation(self, name1, profile1, name2, profile2):
         first_date = ""

@@ -103,7 +103,7 @@ class AgentConversation:
     # 
     def interview_phase(self):
         interview_phase_prompt = """"
-        How has the date gone for you so far? Rate your compatibility score with the other person from the past conversation as score from 1 to 10.\n
+        How has the date gone for you so far? Be picky and do not withhold judgement. Rate your compatibility score with the other person from the past conversation as score from 1 to 10.\n
         Only return a JSON object with the following key value:
         {
             "perspective": a string explaining why you gave that score,
