@@ -15,6 +15,7 @@ module default {
     score1: int32;
     score2: int32;
     meet_cute: str;
+    summary: str;
     index on (.couple);
   }
 

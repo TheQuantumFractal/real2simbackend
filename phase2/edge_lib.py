@@ -70,7 +70,7 @@ def update_user(name: str, context: str = ""):
         }
     """, name=name, context=context)
 
-def update_couple(person1: str, person2: str, conversation1: str = "", conversation2: str = "", perspective1: str = "", perspective2: str = "", score1: int = -1, score2: int = -1, meet_cute=""):
+def update_couple(person1: str, person2: str, conversation1: str = "", conversation2: str = "", perspective1: str = "", perspective2: str = "", score1: int = -1, score2: int = -1, meet_cute="", summary: str = ""):
     idx = person1 < person2
     person1, person2 = (person1, person2) if idx else (person2, person1)
     conversation1, conversation2 = (conversation1, conversation2) if idx else (conversation2, conversation1)
@@ -84,16 +84,18 @@ def update_couple(person1: str, person2: str, conversation1: str = "", conversat
             perspective1,
             perspective2,
             score1,
-            score2
+            score2,
+            summary
         }
         FILTER .couple = (<str>$person1, <str>$person2)
-    """, person1=person1, person2=person2)
-    conversation1 = conversation1 if conversation1 else entry.conversation1.value
-    conversation2 = conversation2 if conversation2 else entry.conversation2.value
-    perspective1 = perspective1 if perspective1 else entry.perspective1.value
-    perspective2 = perspective2 if perspective2 else entry.perspective2.value
-    score1 = score1 if score1 != -1 else entry.score1.value
-    score2 = score2 if score2 != -1 else entry.score2.value
+    """, person1=person1, person2=person2)[0]
+    conversation1 = conversation1 if conversation1 else entry.conversation1
+    conversation2 = conversation2 if conversation2 else entry.conversation2
+    perspective1 = perspective1 if perspective1 else entry.perspective1
+    perspective2 = perspective2 if perspective2 else entry.perspective2
+    score1 = score1 if score1 != -1 else entry.score1
+    score2 = score2 if score2 != -1 else entry.score2
+    summary = summary if summary else entry.summary
 
     client.query("""
         UPDATE Couple
@@ -105,9 +107,10 @@ def update_couple(person1: str, person2: str, conversation1: str = "", conversat
             perspective2 := <str>$perspective2,
             score1 := <int32>$score1,
             score2 := <int32>$score2,
-            meet_cute := <str>$meet_cute
+            meet_cute := <str>$meet_cute,
+            summary := <str>$summary
         }
-    """, person1=person1, person2=person2, conversation1=conversation1, conversation2=conversation2, perspective1=perspective1, perspective2=perspective2, score1=score1, score2=score2, meet_cute=meet_cute)
+    """, person1=person1, person2=person2, conversation1=conversation1, conversation2=conversation2, perspective1=perspective1, perspective2=perspective2, score1=score1, score2=score2, meet_cute=meet_cute, summary=summary)
 
 def get_user(name: str):
     try:
@@ -145,7 +148,8 @@ def get_couple(person1: str, person2: str):
             perspective2,
             score1,
             score2,
-            meet_cute
+            meet_cute,
+            summary
         }
         FILTER .couple = (<str>$person1, <str>$person2)
     """, person1=person1, person2=person2)[0]
